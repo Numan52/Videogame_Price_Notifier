@@ -62,7 +62,7 @@ public class Main {
                 System.out.println(("The videogame was not found. Please enter the full title of the game"));
                 return;
             } else {
-                System.out.println("The following games were found: \n");
+                System.out.println("The following games were found:");
                 for (int i = 0; i < videogames.size(); i++) {
                     System.out.println(i + 1 + ": " + videogames.get(i).getName());
                 }
@@ -73,13 +73,19 @@ public class Main {
                     try {
                         choice = new Scanner(System.in).nextInt();
                     } catch (Exception e) {
-                        System.out.println("Please enter the number of your chosen game");
+                        System.out.println("Please enter the number of your chosen game:");
                     }
                 }
 
                 game = videogames.get(choice - 1).getName();
             }
 
+            for (UserVideogame subscribedGame : user.getSubbedGames()) {
+                if (subscribedGame.getVideogame().equals(game)) {
+                    System.out.println("You are already subscribed to this game.");
+                    return;
+                }
+            }
 
             EntityTransaction transaction = em.getTransaction();
             try {

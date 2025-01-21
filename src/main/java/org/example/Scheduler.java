@@ -72,8 +72,6 @@ public class Scheduler {
                     e.printStackTrace();
                 }
             }
-            System.out.print("scrapedgames: ");
-            System.out.println(scrapedGames);
             sendMail(scrapedGames, userVideogameEntry.getKey());
 
         }
@@ -122,8 +120,7 @@ public class Scheduler {
         for (Scraper scraper : scrapers) {
             List<ScrapedVideogame> scrapedGames = scraper.scrapeSite(gameTitle);
             List<ScrapedVideogame> filteredGames = VideogamesUtil.filterGames(scrapedGames);
-//            System.out.print("scraped games");
-//            System.out.println(scrapedGames);
+
             Optional<ScrapedVideogame> scrapedGame = filteredGames.stream()
                     .min((game1, game2) -> Float.compare(game1.getPrice(), game2.getPrice()));
 
