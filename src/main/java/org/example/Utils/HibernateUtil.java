@@ -1,6 +1,5 @@
-package org.example;
+package org.example.Utils;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 

@@ -21,16 +21,16 @@ public class SteamScraper extends Scraper {
     }
 
     @Override
-    public ArrayList<ScrapedVideogame> parseDocument(Document document) {
+    public ArrayList<ScrapedVideogame> parseDocument(Document document, String searchTerm) {
         ArrayList<ScrapedVideogame> matchingProducts = new ArrayList<>();
 
         Elements elements = document.select(PRODUCT_DIV);
         Elements titles = document.select(PRODUCT_DIV + " " + TITLE_SPAN);
 
-        System.out.println(elements);
 
         for (int i = 0; i < Math.min(NUM_TITLES, titles.size()); i++) {
             ScrapedVideogame videogame = new ScrapedVideogame();
+            videogame.setSearchString(searchTerm);
             videogame.setWebsite("Steam");
 
             Element title = elements.get(i).selectFirst(TITLE_SPAN);
@@ -39,14 +39,16 @@ public class SteamScraper extends Scraper {
             Element priceElement = elements.get(i).selectFirst(PRICE_DIV);
             if (priceElement != null) {
                 String priceString = priceElement.text().replace(",", ".");
-                float price = Float.parseFloat(priceString.substring(0, priceString.length() - 1));
-                videogame.setPrice(price);
+                if (!priceString.toLowerCase().equals("free")) {
+                    float price = Float.parseFloat(priceString.substring(0, priceString.length() - 1));
+                    videogame.setPrice(price);
+                } else {
+                    videogame.setPrice(0);
+                }
+
             } else {
                 videogame.setPrice(-1);
             }
-
-
-
 
             System.out.println(videogame.toString());
             System.out.println();

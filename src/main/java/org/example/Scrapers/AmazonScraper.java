@@ -21,7 +21,7 @@ public class AmazonScraper extends Scraper {
     }
 
     @Override
-    public ArrayList<ScrapedVideogame> parseDocument(Document document) {
+    public ArrayList<ScrapedVideogame> parseDocument(Document document , String searchTerm) {
         ArrayList<ScrapedVideogame> matchingProducts = new ArrayList<>();
 
         Elements elements = document.select(productDiv);
@@ -30,6 +30,7 @@ public class AmazonScraper extends Scraper {
         for (int i = 0; i < titles.size(); i++) {
             ScrapedVideogame videogame = new ScrapedVideogame();
             videogame.setWebsite("Amazon");
+            videogame.setSearchString(searchTerm);
 
             Element title = elements.get(i).selectFirst(titleSpan);
             videogame.setName(title != null ? title.text() : "Unknown Title");

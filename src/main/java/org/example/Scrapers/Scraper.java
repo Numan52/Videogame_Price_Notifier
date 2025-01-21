@@ -14,7 +14,7 @@ public abstract class Scraper {
     private OkHttpClient client = new OkHttpClient();
 
     public abstract String getSearchUrl(String searchTerm);
-    public abstract ArrayList<ScrapedVideogame> parseDocument(Document document);
+    public abstract ArrayList<ScrapedVideogame> parseDocument(Document document, String searchTerm);
 
     public ArrayList<ScrapedVideogame> scrapeSite(String searchTerm) throws IOException {
         ArrayList<ScrapedVideogame> matchingProducts = new ArrayList<>();
@@ -28,7 +28,7 @@ public abstract class Scraper {
             if (response.body() != null) {
                 String html = response.body().string();
                 Document document = Jsoup.parse(html);
-                matchingProducts = parseDocument(document);
+                matchingProducts = parseDocument(document, searchTerm);
 
                 return matchingProducts;
             } else {

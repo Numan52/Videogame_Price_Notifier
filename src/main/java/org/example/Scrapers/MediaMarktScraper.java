@@ -12,7 +12,7 @@ public class MediaMarktScraper extends Scraper {
     }
 
     @Override
-    public ArrayList<ScrapedVideogame> parseDocument(Document document) {
+    public ArrayList<ScrapedVideogame> parseDocument(Document document, String searchTerm) {
         return null;
     }
 

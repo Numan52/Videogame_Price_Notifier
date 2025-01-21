@@ -1,36 +1,31 @@
-package org.example;
+package org.example.Utils;
 
-import jakarta.mail.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import org.simplejavamail.MailException;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
 
-import java.util.Properties;
-
 public class EmailSender {
     private String host;
     private int port;
     private String emailAddress;
     private String password;
-    private String from;
     private String to;
     private String subject;
-    private String content;
+    private String textContent;
+    private String htmlContent;
 
 
-    public EmailSender(String host, int port, String emailAddress, String password, String from, String to, String subject, String content) {
+    public EmailSender(String host, int port, String emailAddress, String password, String to, String subject, String textContent, String htmlContent) {
         this.host = host; // smtp.gmail.com
         this.port = port; // 587 (TLS) / 465 (SSL)
         this.emailAddress = emailAddress;
         this.password = password;
-        this.from = from;
         this.to = to;
         this.subject = subject;
-        this.content = content;
+        this.textContent = textContent;
+        this.htmlContent = htmlContent;
     }
 
 
@@ -40,7 +35,8 @@ public class EmailSender {
                     .from(emailAddress)
                     .to(to)
                     .withSubject(subject)
-                    .withPlainText(content)
+                    .withHTMLText(htmlContent)
+                    .withPlainText(textContent)
                     .buildEmail();
 
             Mailer mailer = MailerBuilder
@@ -53,9 +49,7 @@ public class EmailSender {
             System.err.println(e.getMessage());
         }
 
-
-
-
+        System.out.println("EMAIL SENT");
     }
 
 
@@ -94,13 +88,6 @@ public class EmailSender {
         this.password = password;
     }
 
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
 
     public String getTo() {
         return to;
@@ -118,11 +105,11 @@ public class EmailSender {
         this.subject = subject;
     }
 
-    public String getContent() {
-        return content;
+    public String getTextContent() {
+        return textContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
     }
 }

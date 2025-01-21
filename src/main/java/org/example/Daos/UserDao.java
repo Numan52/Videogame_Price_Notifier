@@ -3,7 +3,10 @@ package org.example.Daos;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.example.Entities.User;
-import org.example.HibernateUtil;
+import org.example.Entities.UserVideogame;
+import org.example.Utils.HibernateUtil;
+
+import java.util.List;
 
 public class UserDao {
     private EntityManager entityManager;
@@ -22,4 +25,15 @@ public class UserDao {
             return null;
         }
     }
+
+    public List<UserVideogame> findUserVideogames() {
+        try {
+            return entityManager.createQuery("select uv from UserVideogame uv", UserVideogame.class)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

@@ -21,7 +21,7 @@ public class InstantGamingScraper extends Scraper {
     }
 
     @Override
-    public ArrayList<ScrapedVideogame> parseDocument(Document document) {
+    public ArrayList<ScrapedVideogame> parseDocument(Document document, String searchTerm) {
         ArrayList<ScrapedVideogame> matchingProducts = new ArrayList<>();
 
         Elements elements = document.select(PRODUCT_DIV);
@@ -29,6 +29,7 @@ public class InstantGamingScraper extends Scraper {
 
         for (int i = 0; i < titles.size(); i++) {
             ScrapedVideogame videogame = new ScrapedVideogame();
+            videogame.setSearchString(searchTerm);
             videogame.setWebsite("Instant Gaming");
 
             Element title = elements.get(i).selectFirst(TITLE_SPAN);

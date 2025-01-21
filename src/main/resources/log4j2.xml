@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="CONSOLE">
+            <JsonTemplateLayout/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.example" level="INFO"/>
+        <Root level="WARN">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

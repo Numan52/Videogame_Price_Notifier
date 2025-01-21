@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Utils;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.persistence.*;

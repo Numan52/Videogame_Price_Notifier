@@ -2,7 +2,7 @@ package org.example.Daos;
 
 import jakarta.persistence.EntityManager;
 import org.example.Entities.Videogame;
-import org.example.HibernateUtil;
+import org.example.Utils.HibernateUtil;
 
 import java.util.ArrayList;
 import java.util.List;

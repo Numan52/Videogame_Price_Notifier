@@ -1,6 +1,7 @@
 package org.example.Entities;
 
 public class ScrapedVideogame {
+    private String searchString;
     private String name;
     private float price;
     private String website;
@@ -9,10 +10,19 @@ public class ScrapedVideogame {
     public ScrapedVideogame() {
     }
 
-    public ScrapedVideogame(String name, float price, String website) {
+    public ScrapedVideogame(String searchString, String name, float price, String website) {
+        this.searchString = searchString;
         this.name = name;
         this.price = price;
         this.website = website;
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 
     public String getName() {
@@ -39,10 +49,12 @@ public class ScrapedVideogame {
         this.website = website;
     }
 
+
     @Override
     public String toString() {
         return "ScrapedVideogame{" +
-                "name='" + name + '\'' +
+                "searchString='" + searchString + '\'' +
+                ", name='" + name + '\'' +
                 ", price=" + price +
                 ", website='" + website + '\'' +
                 '}';
