@@ -5,7 +5,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.example.Entities.ScrapedVideogame;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.DataUtil;
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 import java.io.IOException;
 import java.util.ArrayList;

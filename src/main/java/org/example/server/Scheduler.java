@@ -1,4 +1,4 @@
-package org.example;
+package org.example.server;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.logging.log4j.LogManager;
@@ -17,26 +17,31 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class Scheduler {
-    private static final UserDao userDao = new UserDao();
-    private static final Scraper[] scrapers = new Scraper[]{new InstantGamingScraper(), new SteamScraper()};
-    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+    private UserDao userDao;
+    private Scraper[] scrapers;
+    private ScheduledExecutorService executorService;
     private static Dotenv dotenv = Dotenv.load();
-    private static Logger logger = LogManager.getLogger(Scheduler.class);
+    private static Logger logger = LogManager.getLogger(Server.class);
 
-    public static void main(String[] args) {
+    public Scheduler(UserDao userDao, Scraper[] scrapers, ScheduledExecutorService executorService) {
+        this.userDao = userDao;
+        this.scrapers = scrapers;
+        this.executorService = executorService;
+    }
+
+    // TODO: ADD PARALLELISM
+    public void scheduleTask() {
         Runnable task = () -> executeTask();
 
         try {
             executorService.scheduleAtFixedRate(task, 0, 24, TimeUnit.HOURS);
         } catch (Exception e) {
             e.printStackTrace();
-
-
         }
     }
 
 
-    private static void executeTask() {
+    private void executeTask() {
         Map<String, List<UserVideogame>> userVideogamesMap = new HashMap<>(); // map users to their registered games
 
         List<UserVideogame> userVideogames = userDao.findUserVideogames();
@@ -66,20 +71,21 @@ public class Scheduler {
             for (UserVideogame userVideogame : userVideogameEntry.getValue()) {
                 // (god of war, 30, 1)
                 try {
-                   scrapeVideogames(userVideogame.getVideogame(), scrapedGames);
-
+                    scrapeVideogames(userVideogame, scrapedGames);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            sendMail(scrapedGames, userVideogameEntry.getKey());
+            if (!scrapedGames.isEmpty()) {
+                sendMail(scrapedGames, userVideogameEntry.getKey());
+            }
 
         }
     }
 
 
 
-    public static void sendMail(Map<String, List<ScrapedVideogame>> games, String to) {
+    public void sendMail(Map<String, List<ScrapedVideogame>> games, String to) {
         StringBuilder htmlSb = new StringBuilder("<h2>Following Games are on sale:<h2>");
         StringBuilder textSb = new StringBuilder("Following Games are on sale:");
 
@@ -115,24 +121,29 @@ public class Scheduler {
     }
 
 
-    public static void scrapeVideogames(String gameTitle, Map<String, List<ScrapedVideogame>> allScrapedGames) throws IOException {
+    public  void scrapeVideogames(UserVideogame userVideogame, Map<String, List<ScrapedVideogame>> allScrapedGames) throws IOException {
 
         for (Scraper scraper : scrapers) {
-            List<ScrapedVideogame> scrapedGames = scraper.scrapeSite(gameTitle);
+            List<ScrapedVideogame> scrapedGames = scraper.scrapeSite(userVideogame.getVideogame());
             List<ScrapedVideogame> filteredGames = VideogamesUtil.filterGames(scrapedGames);
 
             Optional<ScrapedVideogame> scrapedGame = filteredGames.stream()
                     .min((game1, game2) -> Float.compare(game1.getPrice(), game2.getPrice()));
 
-            scrapedGame.ifPresent((game) -> {
-                allScrapedGames.merge(
-                        game.getSearchString(),
-                        new ArrayList<>(List.of(game)),
-                        (oldList, newList) ->  {
-                            oldList.addAll(newList);
-                            return oldList;
-                        }
-                );
+
+
+            scrapedGame.ifPresent((_game) -> {
+                if (_game.getPrice() <= userVideogame.getPriceThreshold()) {
+                    allScrapedGames.merge(
+                            _game.getSearchString(),
+                            new ArrayList<>(List.of(_game)),
+                            (oldList, newList) ->  {
+                                oldList.addAll(newList);
+                                return oldList;
+                            }
+                    );
+                }
+
             });
         }
     }

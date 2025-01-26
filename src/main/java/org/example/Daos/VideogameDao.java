@@ -16,8 +16,9 @@ public class VideogameDao {
 
     public List<Videogame> findVideogame(String game) {
         try {
-            return entityManager.createQuery("select v.name from Videogame v where lower(v.name) like lower(:game)", Videogame.class)
+            return entityManager.createQuery("select distinct v.name from Videogame v where lower(v.name) like lower(:game) ", Videogame.class)
                     .setParameter("game", "%" + game + "%")
+                    .setMaxResults(5)
                     .getResultList();
         } catch (Exception e) {
             System.err.println("Error finding videogame");

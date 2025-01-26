@@ -21,7 +21,6 @@ public class Videogame {
 
     public Videogame(String name) {
         this.name = name;
-
     }
 
 
@@ -31,6 +30,14 @@ public class Videogame {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
