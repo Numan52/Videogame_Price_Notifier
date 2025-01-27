@@ -63,7 +63,7 @@ public class SubscriptionHandler implements HttpHandler {
 
             for (UserVideogame subscribedGame : user.getSubbedGames()) {
                 if (subscribedGame.getVideogame().equals(userVideoGameDto.getGameTitle())) {
-                    ApiUtility.sendErrorResponse(exchange, 400, "Use is already subscribed to " + "\"" + userVideoGameDto.getGameTitle() + "\"");
+                    ApiUtility.sendErrorResponse(exchange, 400, "You are already subscribed to " + "\"" + userVideoGameDto.getGameTitle() + "\"");
                     return;
                 }
             }
