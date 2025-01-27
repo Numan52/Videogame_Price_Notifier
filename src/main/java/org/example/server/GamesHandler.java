@@ -22,12 +22,15 @@ public class GamesHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange)  {
+    public void handle(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow the specific origin
+
+        if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
+            exchange.sendResponseHeaders(405, -1);
+            return;
+        }
+
         try {
-            if (!exchange.getRequestMethod().equalsIgnoreCase("get")) {
-                exchange.sendResponseHeaders(405, -1);
-                return;
-            }
 
             String gameQuery = exchange.getRequestURI().getQuery();
             System.out.println("query: " + gameQuery);
@@ -47,7 +50,6 @@ public class GamesHandler implements HttpHandler {
             String gamesJson = gson.toJson(foundGames);
 
             exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow the specific origin
             exchange.sendResponseHeaders(200, gamesJson.getBytes().length);
             OutputStream outputStream = exchange.getResponseBody();
             outputStream.write(gamesJson.getBytes());

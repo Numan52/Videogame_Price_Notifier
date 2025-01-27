@@ -29,13 +29,18 @@ public class SubscriptionHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow the specific origin
+
         if (!exchange.getRequestMethod().equalsIgnoreCase("post")) {
             exchange.sendResponseHeaders(405, -1);
+            exchange.close();
             return;
         }
+
         System.out.println("before parsebody");
         UserVideoGameDto userVideoGameDto = parseBody(exchange);
         if (userVideoGameDto == null) {
+            exchange.close();
             return;
         }
 
@@ -73,8 +78,8 @@ public class SubscriptionHandler implements HttpHandler {
 
             transaction.commit();
 
-            exchange.sendResponseHeaders(200, -1);
 
+            exchange.sendResponseHeaders(200, -1);
 
         } catch (Exception e) {
             e.printStackTrace();
