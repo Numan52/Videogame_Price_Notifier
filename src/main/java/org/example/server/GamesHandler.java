@@ -31,12 +31,10 @@ public class GamesHandler implements HttpHandler {
         }
 
         try {
-
             String gameQuery = exchange.getRequestURI().getQuery();
             System.out.println("query: " + gameQuery);
 
             Map<String, String> queryParams = parseQueryParams(gameQuery);
-
 
             if (queryParams.size() != 1 || queryParams.get("search") == null) {
                 String response = "This endpoint only accepts one query parameter with the \"search\" key (eg. <url>?search=<game_title>)";

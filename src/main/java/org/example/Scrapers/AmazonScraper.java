@@ -43,8 +43,7 @@ public class AmazonScraper extends Scraper {
                 videogame.setPrice(Float.parseFloat(price.text()));
             }
 
-            System.out.println(videogame.toString());
-            System.out.println();
+
 
             matchingProducts.add(videogame);
         }

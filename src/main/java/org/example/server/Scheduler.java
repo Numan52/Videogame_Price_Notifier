@@ -6,11 +6,10 @@ import org.apache.logging.log4j.Logger;
 import org.example.Daos.UserDao;
 import org.example.Entities.ScrapedVideogame;
 import org.example.Entities.UserVideogame;
-import org.example.Scrapers.InstantGamingScraper;
 import org.example.Scrapers.Scraper;
-import org.example.Scrapers.SteamScraper;
 import org.example.Utils.EmailSender;
 import org.example.Utils.VideogamesUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -62,27 +61,44 @@ public class Scheduler {
         }
 
         Map<String, List<ScrapedVideogame>> mappedVideogame = new HashMap<>(); // Map user to the scraped videogame with the lowest price
+        List<Callable<Void>> notifyUserTasks = getNotifyTasks(userVideogamesMap);
+
+        try {
+            executorService.invokeAll(notifyUserTasks);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            e.printStackTrace();
+        }
+
+    }
+
+    @NotNull
+    private List<Callable<Void>> getNotifyTasks(Map<String, List<UserVideogame>> userVideogamesMap) {
+        List<Callable<Void>> notifyUserTasks = new ArrayList<>();
 
         for (Map.Entry<String, List<UserVideogame>> userVideogameEntry : userVideogamesMap.entrySet()) {
             // MAP<"numan@gmail.com", {(god of war, 30, 1), (fifa 18, 15, 1)}>
+            notifyUserTasks.add(() -> {
+                Map<String, List<ScrapedVideogame>> scrapedGames = new HashMap<>(); // key = searchstring, value = list of scrapedVideogames (1 game per scraped website)
 
-            Map<String, List<ScrapedVideogame>> scrapedGames = new HashMap<>(); // key = searchstring, value = list of scrapedVideogames (1 game per scraped website)
-
-            for (UserVideogame userVideogame : userVideogameEntry.getValue()) {
-                // (god of war, 30, 1)
-                try {
-                    scrapeVideogames(userVideogame, scrapedGames);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                for (UserVideogame userVideogame : userVideogameEntry.getValue()) {
+                    // (god of war, 30, 1)
+                    try {
+                        System.out.println(userVideogame.getUser().getEmail());
+                        scrapeVideogames(userVideogame, scrapedGames);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-            if (!scrapedGames.isEmpty()) {
-                sendMail(scrapedGames, userVideogameEntry.getKey());
-            }
+                if (!scrapedGames.isEmpty()) {
+                    sendMail(scrapedGames, userVideogameEntry.getKey());
+                }
 
+                return null;
+            });
         }
+        return notifyUserTasks;
     }
-
 
 
     public void sendMail(Map<String, List<ScrapedVideogame>> games, String to) {
@@ -121,7 +137,7 @@ public class Scheduler {
     }
 
 
-    public  void scrapeVideogames(UserVideogame userVideogame, Map<String, List<ScrapedVideogame>> allScrapedGames) throws IOException {
+    public void scrapeVideogames(UserVideogame userVideogame, Map<String, List<ScrapedVideogame>> allScrapedGames) throws IOException {
 
         for (Scraper scraper : scrapers) {
             List<ScrapedVideogame> scrapedGames = scraper.scrapeSite(userVideogame.getVideogame());
@@ -129,8 +145,6 @@ public class Scheduler {
 
             Optional<ScrapedVideogame> scrapedGame = filteredGames.stream()
                     .min((game1, game2) -> Float.compare(game1.getPrice(), game2.getPrice()));
-
-
 
             scrapedGame.ifPresent((_game) -> {
                 if (_game.getPrice() <= userVideogame.getPriceThreshold()) {

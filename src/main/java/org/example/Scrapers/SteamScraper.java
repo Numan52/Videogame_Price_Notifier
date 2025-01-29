@@ -50,8 +50,6 @@ public class SteamScraper extends Scraper {
                 videogame.setPrice(-1);
             }
 
-            System.out.println(videogame.toString());
-            System.out.println();
 
             matchingProducts.add(videogame);
         }

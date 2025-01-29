@@ -25,7 +25,7 @@ public class Server {
                 Executors.newScheduledThreadPool(10)
         );
 
-//        scheduler.scheduleTask();
+        scheduler.scheduleTask();
 
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);

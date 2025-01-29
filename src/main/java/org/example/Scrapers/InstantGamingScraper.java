@@ -42,8 +42,6 @@ public class InstantGamingScraper extends Scraper {
             videogame.setPrice(price);
 
 
-            System.out.println(videogame.toString());
-            System.out.println();
 
             matchingProducts.add(videogame);
         }
